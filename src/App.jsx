@@ -144,7 +144,7 @@ const App = () => {
               <a href="https://mphstar.my.id" target="_blank" rel="noopener noreferrer"><Info /></a>
             </div>
           </div>
-          <div ref={ContainerChat} className="flex  flex-col h-full overflow-y-auto px-0 md:px-6 py-4 gap-2">
+          <div ref={ContainerChat} className="flex  flex-col h-full overflow-y-auto px-0 md:px-6 py-4 gap-4">
 
             {data.map((item, index) => (
               <CardChat key={index} sender={item.sender} msg={item.message} image={item.imageProfile} isSending={item.isSending ?? false} />

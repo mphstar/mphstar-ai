@@ -69,7 +69,7 @@
   @layer base {
     * {
       font-family: "Poppins", sans-serif;
-      @apply border-border text-base;
+      @apply border-border text-sm md:text-base;
     }
     body {
       @apply bg-background text-foreground;
