@@ -1,14 +1,17 @@
-import { FaFileUpload, FaGithub, FaUser } from "react-icons/fa";
+import { FaGithub, FaUser } from "react-icons/fa";
 import React, { useEffect, useRef, useState } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Delete, Image, Info, Send, Trash } from "lucide-react";
+import { Info, Send, Trash } from "lucide-react";
 import CardChat from "./components/CardChat";
 import chat from "./data/chat";
+import { IoCreateSharp } from "react-icons/io5";
 
 const App = () => {
 
   const ContainerChat = useRef()
   const [image, setImage] = useState()
+  const [loading, setLoading] = useState(false)
+  const [data, setData] = useState(chat)
 
   const handleImage = (e) => {
     setImage(e.target.files[0])
@@ -21,19 +24,56 @@ const App = () => {
   }
 
   useEffect(() => {
-    ContainerChat.current.scrollTop = ContainerChat.current.scrollHeight
+    ContainerChat.current.scrollTo({
+      top: ContainerChat.current.scrollHeight,
+      behavior: 'smooth'
+    })
 
     return () => {
-      ContainerChat.current.scrollTop = ContainerChat.current.scrollHeight
+      ContainerChat.current.scrollTo({
+        top: ContainerChat.current.scrollHeight,
+        behavior: 'smooth'
+      })
     }
 
-  }, [])
+  }, [data])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (fieldChat === "") return
 
-    console.log(image);
+    setLoading(true)
+
+    setData([...data, {
+      imageProfile: "https://github.com/shadcn.png",
+      sender: "me",
+      message: fieldChat,
+    }])
+
+    setFieldChat("")
+
+
+    const res = await fetch("http://localhost:3000/v1/api/chat", {
+      method: 'POST',
+      body: JSON.stringify({
+        text: fieldChat,
+      }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+
+    if (res.ok) {
+      const result = await res.json()
+
+      setData((value) => [...value, {
+        imageProfile: "/foto.jpg",
+        sender: "mphstar",
+        message: result.text,
+      }])
+
+      setLoading(false)
+    }
   }
 
   return (
@@ -48,8 +88,9 @@ const App = () => {
 
       <div className="flex flex-col md:flex-row flex-1 md:flex-initial h-[500px] mt-3 border-gray-100 ">
         <div className="hidden md:flex flex-col border-[2px] px-6 py-4 rounded-tl-[5px] rounded-bl-[5px]">
-          <div className="flex flex-row">
-            <p className="font-semibold text-2xl">Chat <span className="text-gray-300 text-2xl">(1)</span></p>
+          <div className="flex flex-row items-center">
+            <p className="font-semibold text-2xl flex-1">Chat <span className="text-gray-300 text-2xl">(1)</span></p>
+            <IoCreateSharp size={20} className="text-gray-500 hover:text-gray-600" />
           </div>
 
           <div className="flex flex-row gap-3 w-[200px] mt-12 hover:bg-gray-100 duration-300 ease-in-out px-3 py-2 cursor-default">
@@ -59,7 +100,7 @@ const App = () => {
             </Avatar>
             <div className="flex flex-col w-full truncate">
               <h1 className="font-semibold">Mphstar</h1>
-              <p className="flex w-full text-xs text-gray-400">Lorem ipsum dolor sit amet consectetur adipisicing elit. Pariatur, commodi.</p>
+              <p className="flex w-full text-xs text-gray-400">Nothing.</p>
             </div>
 
           </div>
@@ -73,22 +114,27 @@ const App = () => {
               </Avatar>
               <div className="flex flex-col w-full truncate">
                 <h1>Mphstar</h1>
-                <p className="flex w-full text-xs text-gray-400 items-center gap-1">
-                  <span className="size-2 bg-green-500 rounded-full">
-                  </span>
-                  Active
-                </p>
+                {loading
+                  ?
+                  <p className="flex w-full text-xs text-gray-400 items-center gap-1">Sedang mengetik...</p>
+                  :
+                  <p className="flex w-full text-xs text-gray-400 items-center gap-1">
+                    <span className="size-2 bg-green-500 rounded-full">
+                    </span>
+                    Active
+                  </p>
+                }
               </div>
 
             </div>
             <div className="flex flex-row">
-              <Info />
+              <a href="https://mphstar.my.id" target="_blank" rel="noopener noreferrer"><Info /></a>
             </div>
           </div>
           <div ref={ContainerChat} className="flex  flex-col h-full overflow-y-auto px-0 md:px-6 py-4 gap-2">
 
-            {chat.map((item, index) => (
-              <CardChat key={index} sender={item.sender} msg={item.message} image={item.imageProfile} />
+            {data.map((item, index) => (
+              <CardChat key={index} sender={item.sender} msg={item.message} image={item.imageProfile} isSending={item.isSending ?? false} />
             ))}
           </div>
           <div className="flex flex-row h-fit py-3 px-0 md:px-4 items-center gap-3 relative">
@@ -100,12 +146,12 @@ const App = () => {
               </div>
               <img className="w-full h-full object-contain" src={URL.createObjectURL(image)} alt="Preview Image" />
             </div>}
-            <label htmlFor="image"><Image className="text-gray-400" /></label>
-            <input onChange={handleImage} className="hidden" accept="image/*" type="file" name="" id="image" />
+            {/* <label htmlFor="image"><Image className="text-gray-400" /></label>
+            <input onChange={handleImage} className="hidden" accept="image/*" type="file" name="" id="image" /> */}
             <form onSubmit={handleSubmit} className="flex-1">
-              <input value={fieldChat} onChange={handleFieldChat} className="border-[2px] rounded-full px-4 py-1 w-full" type="text" name="" placeholder="Aa" id="" />
+              <input disabled={loading} value={fieldChat} onChange={handleFieldChat} className="border-[2px] rounded-full px-4 py-1 w-full" type="text" name="" placeholder={loading ? "Menunggu.." : "Aa"} id="" />
             </form>
-            <Send className="text-gray-400" />
+            <Send onClick={handleSubmit} className="text-gray-400 hover:text-gray-600" />
           </div>
         </div>
       </div>
