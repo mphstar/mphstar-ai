@@ -11,6 +11,7 @@ const App = () => {
   const ContainerChat = useRef()
   const [image, setImage] = useState()
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(false)
   const [data, setData] = useState(chat)
 
   const handleImage = (e) => {
@@ -52,38 +53,49 @@ const App = () => {
 
     setFieldChat("")
 
+    try {
+      const res = await fetch("https://gemini-experimental-bot.vercel.app/v1/api/chat", {
+        method: 'POST',
+        body: JSON.stringify({
+          text: fieldChat,
+        }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
 
-    const res = await fetch("http://localhost:3000/v1/api/chat", {
-      method: 'POST',
-      body: JSON.stringify({
-        text: fieldChat,
-      }),
-      headers: {
-        'Content-Type': 'application/json'
+      if (res.ok) {
+        const result = await res.json()
+
+        setData((value) => [...value, {
+          imageProfile: "/foto.jpg",
+          sender: "mphstar",
+          message: result.text,
+        }])
+
+        setLoading(false)
       }
-    })
-
-    if (res.ok) {
-      const result = await res.json()
-
+    } catch (error) {
       setData((value) => [...value, {
         imageProfile: "/foto.jpg",
         sender: "mphstar",
-        message: result.text,
+        message: "Maaf, koneksi lagi buruk",
       }])
-
-      setLoading(false)
     }
+
   }
 
   return (
     <div className='flex flex-col h-[100dvh] flex-1 md:justify-center  w-screen container max-w-[1100px]'>
       <div className='flex flex-row items-center h-fit justify-between gap-3 pt-2'>
         <div className="flex flex-col">
-          <h1><span className="font-semibold">Mphstar</span>Bot</h1>
+          <h1><span className="font-semibold">Mphstar</span>AI</h1>
           <p className="text-xs md:hidden">Build by <span className="font-semibold text-xs">Mphstar</span> with ❤️</p>
         </div>
-        <FaGithub size={30} />
+        <a href="https://github.com/mphstar/mphstar-ai.git" target="_blank" rel="noopener noreferrer">
+          <FaGithub size={30} />
+        </a>
+
       </div>
 
       <div className="flex flex-col md:flex-row flex-1 md:flex-initial h-[500px] mt-3 border-gray-100 ">
@@ -157,7 +169,7 @@ const App = () => {
       </div>
       <div className="md:flex hidden flex-row h-fit justify-center md:justify-between py-2">
         <p className="text-sm">Build by <span className="font-semibold text-sm">Mphstar</span> with ❤️</p>
-        <p className="text-sm hidden md:flex">Source code available on GitHub.</p>
+        <p className="text-sm hidden md:flex items-center gap-1">Source code available on <a className="text-sm font-semibold" href="https://github.com/mphstar/mphstar-ai.git" target="_blank">Github</a>.</p>
       </div>
     </div>
   )
