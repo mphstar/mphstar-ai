@@ -11,7 +11,6 @@ const App = () => {
   const ContainerChat = useRef()
   const [image, setImage] = useState()
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(false)
   const [data, setData] = useState(chat)
 
   const handleImage = (e) => {
@@ -54,7 +53,7 @@ const App = () => {
     setFieldChat("")
 
     try {
-      const res = await fetch("https://gemini-experimental-bot.vercel.app/v1/api/chat", {
+      const res = await fetch("https://chatbot-h2puiaeecq-de.a.run.app/v1/api/chat", {
         method: 'POST',
         body: JSON.stringify({
           text: fieldChat,
@@ -81,6 +80,8 @@ const App = () => {
         sender: "mphstar",
         message: "Maaf, koneksi lagi buruk",
       }])
+
+      setLoading(false)
     }
 
   }
