@@ -55,12 +55,9 @@ const App = () => {
 
     try {
       const res = await fetch(
-        "https://chatbot-h2puiaeecq-de.a.run.app/v1/api/chat",
+        `https://api.ryzendesu.vip/api/ai/chatgpt?text=${fieldChat}`,
         {
-          method: "POST",
-          body: JSON.stringify({
-            text: fieldChat,
-          }),
+          method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
@@ -75,13 +72,15 @@ const App = () => {
           {
             imageProfile: "/foto.jpg",
             sender: "mphstar",
-            message: result.text,
+            message: result.response,
           },
         ]);
 
         setLoading(false);
       }
     } catch (error) {
+      console.log(error);
+
       setData((value) => [
         ...value,
         {
@@ -97,12 +96,19 @@ const App = () => {
 
   return (
     <>
-      <img className="fixed top-0 object-cover w-full h-full left-0 opacity-20 -z-10" src="/bg.jpg" alt="Background" />
+      <img
+        className="fixed top-0 object-cover w-full h-full left-0 opacity-20 -z-10"
+        src="/bg.jpg"
+        alt="Background"
+      />
       <div className="flex flex-col h-[100dvh] flex-1 md:justify-center  w-screen container max-w-[1100px]">
         <div className="flex flex-row items-center h-fit justify-between gap-3 pt-2">
           <div className="flex flex-col">
             <h1>
-              <span className="font-semibold text-pink-500 text-base">Mphstar</span>AI
+              <span className="font-semibold text-pink-500 text-base">
+                Mphstar
+              </span>
+              AI
             </h1>
             <p className="text-xs md:hidden">
               Build by <span className="font-semibold text-xs">Mphstar</span>{" "}
@@ -232,8 +238,9 @@ const App = () => {
         </div>
         <div className="md:flex hidden flex-row h-fit justify-center md:justify-between py-2">
           <p className="text-sm">
-            Build by <span className="font-semibold text-sm text-pink-500">Mphstar</span> with
-            ❤️
+            Build by{" "}
+            <span className="font-semibold text-sm text-pink-500">Mphstar</span>{" "}
+            with ❤️
           </p>
           <p className="text-sm hidden md:flex items-center gap-1">
             Source code available on{" "}
