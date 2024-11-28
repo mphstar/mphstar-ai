@@ -79,7 +79,7 @@ const ImageGenerator = () => {
   };
 
   return (
-    <div className="flex flex-col h-full flex-1 md:border-[1px] border-l-0">
+    <div className="flex flex-col h-full flex-1 pl-4 md:border-[1px] border-l-0">
       <div className="flex flex-row h-fit items-center gap-2 md:border-b-[1px] px-0 md:px-6 py-4">
         <div className="flex flex-row gap-3 flex-1">
           <Avatar>
